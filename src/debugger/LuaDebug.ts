@@ -38,6 +38,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected initializeRequest(response: DebugProtocol.InitializeResponse, args: DebugProtocol.InitializeRequestArguments): void {
+		this.sendEvent(new OutputEvent("initializeRequest\n"))
 		this.sendEvent(new InitializedEvent())
 		response.body = response.body || {}
 		response.body.supportsSetVariable = false
@@ -59,6 +60,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected setupProcessHanlders() {
+		this.sendEvent(new OutputEvent("setupProcessHanlders\n"))
 		this.netMgr.on("C2S_HITBreakPoint", result => {
 			this.scopeMgr.setStackInfos(result.data.stack)
 			this.sendEvent(new StoppedEvent("breakpoint", 1))
@@ -81,6 +83,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected launchRequest(response: DebugProtocol.LaunchResponse, args: any): void {
+		this.sendEvent(new OutputEvent("launchRequest\n"))
 		let result = this.checkArgs(args)
 		if (result != true) {
 			this.sendErrorResponse(response, 2001, result)
@@ -125,6 +128,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected attachRequest(response: DebugProtocol.AttachResponse, args: any): void {
+		this.sendEvent(new OutputEvent("attachRequest\n"))
 		if (args.fileExtname != null) {
 			this.fileExtname = args.fileExtname
 		}
@@ -145,7 +149,8 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected disconnectRequest(response: DebugProtocol.DisconnectResponse, args: DebugProtocol.DisconnectArguments): void {
-		this.sendEvent(new OutputEvent("LuaDebug Server has been terminated!"))
+		this.sendEvent(new OutputEvent("disconnectRequest\n"))
+		this.sendEvent(new OutputEvent("LuaDebug Server has been terminated!\n"))
 		if (this.luaStartProc) {
 			this.luaStartProc.kill()
 		}
@@ -153,6 +158,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected setBreakPointsRequest(response: DebugProtocol.SetBreakpointsResponse, args: DebugProtocol.SetBreakpointsArguments): void {
+		this.sendEvent(new OutputEvent("setBreakPointsRequest\n"))
 		let path = args.source.path
 		path = path.substring(0, 1).toLowerCase() + path.substring(1, path.length)
 		let lines = args.lines
@@ -168,6 +174,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected threadsRequest(response: DebugProtocol.ThreadsResponse): void {
+		this.sendEvent(new OutputEvent("threadsRequest\n"))
 		response.body = {
 			threads: [
 				new Thread(1, "thread 1")
@@ -177,6 +184,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected stackTraceRequest(response: DebugProtocol.StackTraceResponse, args: DebugProtocol.StackTraceArguments): void {
+		this.sendEvent(new OutputEvent("stackTraceRequest\n"))
 		let stackInfos: Array<any> = this.scopeMgr.getStackInfos()
 		const frames = new Array<StackFrame>()
 		for (let i = 0; i < stackInfos.length; i++) {
@@ -215,6 +223,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected scopesRequest(response: DebugProtocol.ScopesResponse, args: DebugProtocol.ScopesArguments): void {
+		this.sendEvent(new OutputEvent("scopesRequest\n"))
 		const scopes = this.scopeMgr.createScopes(args.frameId)
 		response.body = {
 			scopes: scopes
@@ -223,6 +232,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected variablesRequest(response: DebugProtocol.VariablesResponse, args: DebugProtocol.VariablesArguments): void {
+		this.sendEvent(new OutputEvent("variablesRequest\n"))
 		let that: LuaDebug = this
 		let luaDebugVarInfo: LuaDebugVarInfo = this.scopeMgr.getDebugVarsInfoByVariablesReference(args.variablesReference)
 		if (luaDebugVarInfo) {
@@ -271,6 +281,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected continueRequest(response: DebugProtocol.ContinueResponse, args: DebugProtocol.ContinueArguments): void {
+		this.sendEvent(new OutputEvent("continueRequest\n"))
 		this.scopeMgr.clear()
 		this.isHitBreak = false
 		this.netMgr.sendMsg(LuaDebuggerEvent.S2C_RUN,
@@ -283,6 +294,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected nextRequest(response: DebugProtocol.NextResponse, args: DebugProtocol.NextArguments): void {
+		this.sendEvent(new OutputEvent("nextRequest\n"))
 		this.scopeMgr.clear()
 		let that: LuaDebug = this
 		function callBackFun(isstep, isover) {
@@ -299,6 +311,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected stepInRequest(response: DebugProtocol.StepInResponse): void {
+		this.sendEvent(new OutputEvent("stepInRequest\n"))
 		this.scopeMgr.clear()
 		let that: LuaDebug = this
 		this.scopeMgr.stepReq(function (isstep, isover) {
@@ -314,11 +327,13 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected pauseRequest(response: DebugProtocol.PauseResponse): void {
+		this.sendEvent(new OutputEvent("pauseRequest\n"))
 		this.netMgr.sendMsg(LuaDebuggerEvent.S2C_PauseThread, {})
 		this.sendResponse(response)
 	}
 
 	protected stepOutRequest(response: DebugProtocol.StepInResponse): void {
+		this.sendEvent(new OutputEvent("stepOutRequest\n"))
 		this.sendResponse(response)
 		let that: LuaDebug = this
 		this.scopeMgr.stepReq(function (isstep, isover) {
@@ -334,6 +349,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected evaluateRequest(response: DebugProtocol.EvaluateResponse, args: DebugProtocol.EvaluateArguments): void {
+		this.sendEvent(new OutputEvent("evaluateRequest\n"))
 		let luadebug: LuaDebug = this
 		let frameId = args.frameId
 		if (frameId == null) {
@@ -419,6 +435,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	protected setVariableRequest(response: DebugProtocol.SetVariableResponse, args: DebugProtocol.SetVariableArguments): void {
+		this.sendEvent(new OutputEvent("setVariableRequest\n"))
 		let varInfo: LuaDebugVarInfo = this.scopeMgr.getDebugVarsInfoByVariablesReference(args.variablesReference)
 		if (varInfo) {
 			let that = this
@@ -446,6 +463,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	public convertToServerPath(path: string): string {
+		this.sendEvent(new OutputEvent("convertToServerPath\n"))
 		if (path.indexOf('@') == 0) {
 			path = path.substring(1)
 		}
@@ -498,6 +516,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	public convertToClientPath(path: string, lines: Array<number>): any {
+		this.sendEvent(new OutputEvent("convertToClientPath\n"))
 		path = path.replace(/\\/g, "/")
 		let nindex: number = path.lastIndexOf("/")
 		let fileName: string = path.substring(nindex + 1)
@@ -513,6 +532,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	private checkArgs(args: any): any {
+		this.sendEvent(new OutputEvent("checkArgs\n"))
 		let localRoot: string = args.localRoot
 		if (!fs.existsSync(localRoot)) {
 			return "localRoot: " + localRoot + " doesn't exist!"
@@ -538,6 +558,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	private initPathMaps(scripts: Array<string>) {
+		this.sendEvent(new OutputEvent("initPathMaps\n"))
 		let paths: Array<string> = new Array<string>()
 		if (scripts) {
 			for (let index = 0; index < scripts.length; index++) {
@@ -577,6 +598,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	private readFileList(path: string) {
+		this.sendEvent(new OutputEvent("readFileList\n"))
 		if (path.indexOf(".svn") > -1) {
 			return
 		}
@@ -609,6 +631,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	private calculatePort(): any {
+		this.sendEvent(new OutputEvent("calculatePort\n"))
 		let port = 7003
 		if (this.pathMaps) {
 			try {
@@ -635,6 +658,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	private initEXCfg() {
+		this.sendEvent(new OutputEvent("initEXCfg\n"))
 		let cfgFile = ospath.join(this.localRoot, ".vscode/settings.json")
 		if (fs.existsSync(cfgFile)) {
 			try {
@@ -644,6 +668,7 @@ export class LuaDebug extends DebugSession {
 	}
 
 	public FormatDate(date: Date, fmt) {
+		this.sendEvent(new OutputEvent("FormatDate\n"))
 		let o = {
 			"M+": date.getMonth() + 1, //月份           
 			"d+": date.getDate(), //日           
