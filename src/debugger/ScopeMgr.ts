@@ -1,4 +1,4 @@
-import { Scope } from 'vscode-debugadapter'
+import { OutputEvent, Scope } from 'vscode-debugadapter'
 import { NetMgr, LuaDebuggerEvent } from './NetMgr'
 import { LuaDebug } from './LuaDebug'
 
@@ -218,6 +218,7 @@ export class ScopeMgr {
 			variablesReference: upLuaDebugInfo.variablesReference,
 			expensive: false
 		})
+		this.getGolbalLuaDebugVarInfo()
 		scopes.push({
 			name: this.golbalLuaDebugVarInfo_.name,
 			variablesReference: this.golbalLuaDebugVarInfo_.variablesReference,
