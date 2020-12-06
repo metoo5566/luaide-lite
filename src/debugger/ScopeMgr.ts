@@ -209,15 +209,15 @@ export class ScopeMgr {
 		let localLuaDebugInfo = this.getLocalLuaDebugInfo(frameId)
 		scopes.push({
 			name: localLuaDebugInfo.name,
-			variablesReference: localLuaDebugInfo.variablesReference,
+			variablesReference: localLuaDebugInfo.variablesReference==1?0:localLuaDebugInfo.variablesReference,
 			expensive: false
 		})
-		let upLuaDebugInfo = this.getUplLuaDebugInfo(frameId)
-		scopes.push({
-			name: upLuaDebugInfo.name,
-			variablesReference: upLuaDebugInfo.variablesReference,
-			expensive: false
-		})
+		// let upLuaDebugInfo = this.getUplLuaDebugInfo(frameId)
+		// scopes.push({
+		// 	name: upLuaDebugInfo.name,
+		// 	variablesReference: upLuaDebugInfo.variablesReference,
+		// 	expensive: false
+		// })
 		this.getGolbalLuaDebugVarInfo()
 		scopes.push({
 			name: this.golbalLuaDebugVarInfo_.name,
