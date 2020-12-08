@@ -228,7 +228,6 @@ export class ScopeMgr {
 	}
 
 	public resVarsInfos(data) {
-		this.luaDebug.sendEvent(new OutputEvent(JSON.stringify(data)+"\n"))
 		let vars = data.vars
 		let isComplete = data.isComplete
 		let variablesReference = data.variablesReference
