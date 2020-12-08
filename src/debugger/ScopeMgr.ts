@@ -209,7 +209,7 @@ export class ScopeMgr {
 		let localLuaDebugInfo = this.getLocalLuaDebugInfo(frameId)
 		scopes.push({
 			name: localLuaDebugInfo.name,
-			variablesReference: localLuaDebugInfo.variablesReference==1?0:localLuaDebugInfo.variablesReference,
+			variablesReference: localLuaDebugInfo.variablesReference,
 			expensive: false
 		})
 		// let upLuaDebugInfo = this.getUplLuaDebugInfo(frameId)
@@ -228,6 +228,7 @@ export class ScopeMgr {
 	}
 
 	public resVarsInfos(data) {
+		this.luaDebug.sendEvent(new OutputEvent(JSON.stringify(data)+"\n"))
 		let vars = data.vars
 		let isComplete = data.isComplete
 		let variablesReference = data.variablesReference
@@ -247,7 +248,7 @@ export class ScopeMgr {
 				name: "{}",
 				type: "table",
 				value: "",
-				variablesReference: newvariablesReference
+				variablesReference: -1
 			})
 		}
 		for (let i = 0; i < luaDebugInfo.vars.length; i++) {
