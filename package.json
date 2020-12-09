@@ -478,7 +478,9 @@
 		"mocha": "^2.3.3",
 		"ts-loader": "^5.4.5",
 		"typescript": "^2.0.3",
-		"vscode": "^1.1.37"
+		"vscode": "^1.1.37",
+		"webpack": "^5.10.0",
+		"webpack-cli": "^4.2.0"
 	},
 	"dependencies": {
 		"rd": "^1.1.2",

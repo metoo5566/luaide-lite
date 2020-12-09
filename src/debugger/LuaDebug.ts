@@ -196,10 +196,10 @@ export class LuaDebug extends DebugSession {
 					fs.writeFileSync(source, json)
 				} catch (e) { }
 			} else {
-				if (source.indexOf(this.fileExtname) == -1) {
-					source = source + this.fileExtname
-				}
-				source = this.convertToServerPath(source)
+				// if (source.indexOf(this.fileExtname) == -1) {
+				// 	source = source + this.fileExtname
+				// }
+				// source = this.convertToServerPath(source)
 			}
 			if (source != null && source != "") {
 				let tname = source.substring(source.lastIndexOf("/") + 1)
