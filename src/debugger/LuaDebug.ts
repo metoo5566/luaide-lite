@@ -184,7 +184,7 @@ export class LuaDebug extends DebugSession {
     response: DebugProtocol.SetBreakpointsResponse,
     args: DebugProtocol.SetBreakpointsArguments
   ): void {
-    let path = args.source.path;
+	let path = args.source.path;
     path = path.substring(0, 1).toLowerCase() + path.substring(1, path.length);
     let lines = args.lines;
     let bps = this.bpMgr.verifiedBreakPoint(path, lines, args.breakpoints);
@@ -242,7 +242,8 @@ export class LuaDebug extends DebugSession {
         // source = this.convertToServerPath(source)
       }
       if (source != null && source != "") {
-        let tname = source.substring(source.lastIndexOf("/") + 1);
+		let tname = source.substring(source.lastIndexOf("/") + 1);
+		source= ospath.normalize(source);
         let line = info.currentline;
         frames.push(
           new StackFrame(i, info.scoreName, new Source(tname, source), line)
