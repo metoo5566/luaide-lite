@@ -120,7 +120,7 @@ export class LuaDebug extends DebugSession {
     //注册事件
     this.setupProcessHanlders();
     if (this.luaStartProc) {
-      this.luaStartProc.kill("SIGUP");
+      this.luaStartProc.kill();
     }
     this.sendResponse(response);
 
